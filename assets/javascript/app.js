@@ -3,6 +3,7 @@ $(document).ready(function() {
 
 // Quiz Object
 	var quizObj = {
+		takeQuiz: false,
 		questionNumbers: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],
 		questionNumber: 0,
 		correct: 0,
@@ -10,10 +11,12 @@ $(document).ready(function() {
 		selected: [],
 		checkedVal:0,
 		questionsAnswered: [],
+		
 		answers: [],
 		questions:[],
 		correctAnswer: [],
 		incorrectAnswers: new Array(15),
+		
 		time: 0,
 
 	};
@@ -35,14 +38,13 @@ $(document).ready(function() {
 	    		quizObj.incorrectAnswers[i][j] = data.results[i].incorrect_answers[j];	
 	    		}
 	    	}
-	    	console.log(quizObj.incorrectAnswers);
 	    }
 	    
 	    }).done(function(response) {
 			console.log(response);
 			console.log(quizObj);			
 			questionCall();
-			
+			quizObj.takeQuiz = true;			
 
 		});
 	};
@@ -50,17 +52,20 @@ $(document).ready(function() {
 	function questionCall(num){
 
 			var num = Math.floor(Math.random() * 15);
-			if(quizObj.selected.indexOf(num) === -1){
-				quizObj.time = 10;
+			quizObj.selected.push(num);
+			if(quizObj.questions.indexOf(num) === -1){
+
+				quizObj.time = 15;
 				quizObj.questionNumber = num;
-				quizObj.selected.push(num);
 				$("#question").html(quizObj.questions[num]);
+				
+				
 				console.log(quizObj.questionNumber);
+				
 				answerCall();
-			}
-			else if(quizObj.selected.indexOf(num) <= 15){
-				for(i=0; i <= 15; i++)
-				num = Math.floor(Math.random() * 15);
+
+				// quizObj.questions.splice(num,1);
+
 			}
 			
 	}	
@@ -70,6 +75,7 @@ $(document).ready(function() {
 		for(i=0; i <= 3; i++){
 			if(i === 0){
 				quizObj.answers.push(quizObj.correctAnswer[quizObj.questionNumber]);
+				
 			}
 			else{
 				quizObj.answers.push(quizObj.incorrectAnswers[quizObj.questionNumber][i-1]);
@@ -100,7 +106,6 @@ $(document).ready(function() {
 	function qReset(){
 		quizObj.answers = [];
 		quizObj.checkedVal = 0;
-
 	}
 
 // Correct Answer Logic
@@ -111,27 +116,45 @@ $(document).ready(function() {
 		}
 		if (quizObj.selected.length === 15){
 			quizObj.selected = [];
+			completeQuiz();
 			qReset();
 			quizCall();
 
 	}
 		}
-// Question Time
+// Complete Quiz
+function completeQuiz(){
+	$("body").html("<h1>FINISHED!!!!</h1>");
+	var grade = (quizObj.correct / 15) * 100;
+	quizObj.time = 5;
+	count();
+};
+// Clock Start
 var questionTime = setInterval(function(){
 	count();
 		
 }, 1000);
+
+$(".stop").on("click", function(event){
+	clearInterval(questionTime);
+});
 // Count
 function count(){
 	$("#time-remaining").text(quizObj.time);
-	var con
 	quizObj.time--;
-	if(quizObj.time < 0){
+	if(quizObj.time < 0 && quizObj.takeQuiz === true){
 		quizObj.time = 0;
 		quizLogic();
 		qReset();
 		questionCall();
 		return;
+	}
+	else if(quizObj.time < 0 && quizObj.takeQuiz === false){
+		quizObj.time = 0;
+		quizLogic();
+		qReset();
+		quizCall();
+
 	}
 
 }
