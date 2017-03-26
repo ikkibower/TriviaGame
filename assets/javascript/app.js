@@ -22,7 +22,9 @@ $(document).ready(function() {
 	};
 // Quiz Load Function
 	function quizCall(){
-		quizObj.questions= [];
+		quizObj.correct = 0;
+		quizObj.incorrect = 0;
+		quizObj.questions = [];
 		quizObj.correctAnswer = [];
 		quizObj.takeQuiz = true;
 		quizObj.questionNumber = 0;
@@ -116,6 +118,8 @@ $(document).ready(function() {
 		$("#1").html('<input type="radio" name="optionsRadios" id="optionsRadios1" value="' + quizObj.answers[1] + '">' + quizObj.answers[1]);
 		$("#2").html('<input type="radio" name="optionsRadios" id="optionsRadios2" value="' + quizObj.answers[2] + '">' + quizObj.answers[2]);
 		$("#3").html('<input type="radio" name="optionsRadios" id="optionsRadios3" value="' + quizObj.answers[3] + '">' + quizObj.answers[3]);
+
+
 	// Selects Checked Radio Button
 		$(this).on("click", function(){
 			quizObj.checkedVal = $("input:checked").val();
@@ -132,8 +136,6 @@ $(document).ready(function() {
 	});
 // Question Reset
 	function qReset(){
-		
-		
 		quizObj.answers = [];
 		quizObj.checkedVal = 0;
 	}
@@ -153,8 +155,6 @@ $(document).ready(function() {
 			quizObj.takeQuiz = false;
 			completeQuiz();
 			qReset();
-			
-
 	}
 		}
 // Complete Quiz
@@ -172,13 +172,16 @@ function completeQuiz(){
 };
 // Clock Start
 var questionTime = setInterval(function(){
-	count();
-		
+	count();		
 }, 1000);
 // Play Again
 $(".play-again").on("click", function(event){
 	quizCall();
 	qReset();
+	count()
+	questionTime = setInterval(function(){
+	count();		
+	}, 1000);
 	
 });
 // Count
