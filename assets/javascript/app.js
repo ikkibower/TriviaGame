@@ -29,6 +29,7 @@ $(document).ready(function() {
 		quizObj.takeQuiz = true;
 		quizObj.questionNumber = 0;
 		quizObj.questionNumbers = [];
+
 		var queryURL = "https://opentdb.com/api.php?amount=15&category=9&type=multiple";
 		
 		$.ajax({
@@ -86,7 +87,7 @@ $(document).ready(function() {
 
 	function questionCall(num){			
 		
-				
+			$("correct-incorrect").empty();	
 			quizObj.time = 15;
 			
 
@@ -145,11 +146,15 @@ $(document).ready(function() {
 		if(quizObj.checkedVal === quizObj.correctAnswer[quizObj.questionNumbers[quizObj.questionNumber]]){
 			quizObj.correct++;
 			quizObj.questionNumber++;
+			$("#correct-incorrect").removeClass("incorrect");
+			$("#correct-incorrect").addClass("correct").text("Correct!");
 			console.log(quizObj.correct);
 		}
 		else{
 			quizObj.incorrect++;
 			quizObj.questionNumber++;
+			$("#correct-incorrect").removeClass("correct");
+			$("#correct-incorrect").addClass("incorrect").text("Inorrect!");
 		}
 		if (quizObj.questionNumber === 15){
 			quizObj.takeQuiz = false;
