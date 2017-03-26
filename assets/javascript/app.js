@@ -4,11 +4,11 @@ $(document).ready(function() {
 // Quiz Object
 	var quizObj = {
 		takeQuiz: false,
-		questionNumbers: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],
+		questionNumbers: [],
 		questionNumber: 0,
 		correct: 0,
 		incorrect: 0,
-		selected: [],
+		// selected: [],
 		checkedVal:0,
 		questionsAnswered: [],
 		
@@ -22,6 +22,11 @@ $(document).ready(function() {
 	};
 // Quiz Load Function
 	function quizCall(){
+		quizObj.questions= [];
+		quizObj.correctAnswer = [];
+		quizObj.takeQuiz = true;
+		quizObj.questionNumber = 0;
+		quizObj.questionNumbers = [];
 		var queryURL = "https://opentdb.com/api.php?amount=15&category=9&type=multiple";
 		
 		$.ajax({
@@ -42,43 +47,64 @@ $(document).ready(function() {
 	    
 	    }).done(function(response) {
 			console.log(response);
-			console.log(quizObj);			
+			console.log(quizObj);
+			
+
+			$("#grade").empty();
+			quizObj.questionNumbers = shuffle([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]);			
 			questionCall();
-			quizObj.takeQuiz = true;			
+						
 
 		});
 	};
-// Select Question in Random Order
-	function questionCall(num){
+// Sort Questions in Random Order		
+	function shuffle(array) {
+	    var i = array.length,
+	        j = 0,
+	        temp;
+	    	while (i--) {
 
-			var num = Math.floor(Math.random() * 15);
-			quizObj.selected.push(num);
-			if(quizObj.questions.indexOf(num) === -1){
+		        j = Math.floor(Math.random() * (i+1));
 
-				quizObj.time = 15;
-				quizObj.questionNumber = num;
-				$("#question").html(quizObj.questions[num]);
+		        // swap randomly chosen element with current element
+		        temp = array[i];
+		        array[i] = array[j];
+		        array[j] = temp;
+
+	    	}
+	    return array;
+	}
+
+		
+		console.log(quizObj.questionNumbers);
+
+
+	function questionCall(num){			
+		
 				
-				
-				console.log(quizObj.questionNumber);
-				
-				answerCall();
-
-				// quizObj.questions.splice(num,1);
-
-			}
+			quizObj.time = 15;
 			
+
+			$("#question").html(quizObj.questions[quizObj.questionNumbers[quizObj.questionNumber]]);
+			
+			
+			console.log(quizObj.questionNumber);
+			
+			answerCall();
+
+
+		
 	}	
 // Puts Answers in Random Order
 	function answerCall(){
 		
 		for(i=0; i <= 3; i++){
 			if(i === 0){
-				quizObj.answers.push(quizObj.correctAnswer[quizObj.questionNumber]);
+				quizObj.answers.push(quizObj.correctAnswer[quizObj.questionNumbers[quizObj.questionNumber]]).innerText;
 				
 			}
 			else{
-				quizObj.answers.push(quizObj.incorrectAnswers[quizObj.questionNumber][i-1]);
+				quizObj.answers.push(quizObj.incorrectAnswers[quizObj.questionNumbers[quizObj.questionNumber]][i-1]).innerText;
 			}
 
 		}
@@ -91,7 +117,7 @@ $(document).ready(function() {
 		$(this).on("click", function(){
 			quizObj.checkedVal = $("input:checked").val();
 			console.log(quizObj.checkedVal);
-			console.log(quizObj.correctAnswer[quizObj.questionNumber]);
+			console.log(quizObj.correctAnswer[quizObj.questionNumbers[quizObj.questionNumber]]);
 		});
 	}
 // Submit
@@ -99,33 +125,41 @@ $(document).ready(function() {
 		quizLogic();
 		qReset();
 		questionCall();
-		console.log(quizObj.selected);
-		console.log(quizObj.answers);
+
 	});
 // Question Reset
 	function qReset(){
+		
+		
 		quizObj.answers = [];
 		quizObj.checkedVal = 0;
 	}
 
 // Correct Answer Logic
 	function quizLogic(){
-		if(quizObj.checkedVal === quizObj.correctAnswer[quizObj.questionNumber]){
-			quizObj.correct += 1;
+		if(quizObj.checkedVal === quizObj.correctAnswer[quizObj.questionNumbers[quizObj.questionNumber]]){
+			quizObj.correct++;
+			quizObj.questionNumber++;
 			console.log(quizObj.correct);
 		}
-		if (quizObj.selected.length === 15){
-			quizObj.selected = [];
+		else{
+			quizObj.questionNumber++;
+		}
+		if (quizObj.questionNumber === 15){
+			quizObj.takeQuiz = false;
 			completeQuiz();
 			qReset();
-			quizCall();
+			
 
 	}
 		}
 // Complete Quiz
 function completeQuiz(){
-	$("body").html("<h1>FINISHED!!!!</h1>");
+	
+
 	var grade = (quizObj.correct / 15) * 100;
+	
+	$("#grade").text(grade);
 	quizObj.time = 5;
 	count();
 };
@@ -152,8 +186,9 @@ function count(){
 	else if(quizObj.time < 0 && quizObj.takeQuiz === false){
 		quizObj.time = 0;
 		quizLogic();
-		qReset();
 		quizCall();
+		qReset();
+		
 
 	}
 
