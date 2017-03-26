@@ -48,8 +48,11 @@ $(document).ready(function() {
 	    }).done(function(response) {
 			console.log(response);
 			console.log(quizObj);
-			
-
+			$(".submit").removeClass("hide");
+			$("#time-remaining").removeClass("hide");
+			$("#question").removeClass("hide");
+			$(".answers").removeClass("hide");
+			$(".play-again").addClass("hide");
 			$("#grade").empty();
 			quizObj.questionNumbers = shuffle([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]);			
 			questionCall();
@@ -143,6 +146,7 @@ $(document).ready(function() {
 			console.log(quizObj.correct);
 		}
 		else{
+			quizObj.incorrect++;
 			quizObj.questionNumber++;
 		}
 		if (quizObj.questionNumber === 15){
@@ -155,22 +159,27 @@ $(document).ready(function() {
 		}
 // Complete Quiz
 function completeQuiz(){
+	$(".submit").addClass("hide");
+	$("#time-remaining").addClass("hide");
+	$("#question").addClass("hide");
+	$(".answers").addClass("hide");
+	$(".play-again").removeClass("hide");
+	var grade = Math.floor((quizObj.correct / 15) * 100);
+	clearInterval(questionTime);
+	$("#grade").html("Your Grade: " + grade + "/100 <br> Correct: " + quizObj.correct + "/15 <br> Incorrect: " + quizObj.incorrect + "/15");
 	
 
-	var grade = (quizObj.correct / 15) * 100;
-	
-	$("#grade").text(grade);
-	quizObj.time = 5;
-	count();
 };
 // Clock Start
 var questionTime = setInterval(function(){
 	count();
 		
 }, 1000);
-
-$(".stop").on("click", function(event){
-	clearInterval(questionTime);
+// Play Again
+$(".play-again").on("click", function(event){
+	quizCall();
+	qReset();
+	
 });
 // Count
 function count(){
