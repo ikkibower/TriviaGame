@@ -8,15 +8,12 @@ $(document).ready(function() {
 		questionNumber: 0,
 		correct: 0,
 		incorrect: 0,
-		// selected: [],
 		checkedVal:0,
-		questionsAnswered: [],
-		
+		questionsAnswered: [],		
 		answers: [],
 		questions:[],
 		correctAnswer: [],
-		incorrectAnswers: new Array(15),
-		
+		incorrectAnswers: new Array(15),		
 		time: 0,
 
 	};
@@ -49,12 +46,12 @@ $(document).ready(function() {
 	    }
 	    
 	    }).done(function(response) {
-			console.log(response);
-			console.log(quizObj);
+
 			$(".submit").removeClass("hide");
 			$("#time-remaining").removeClass("hide");
 			$("#question").removeClass("hide");
 			$(".answers").removeClass("hide");
+
 			$(".play-again").addClass("hide");
 			$("#grade").empty();
 			quizObj.questionNumbers = shuffle([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]);			
@@ -76,30 +73,15 @@ $(document).ready(function() {
 		        temp = array[i];
 		        array[i] = array[j];
 		        array[j] = temp;
-
 	    	}
 	    return array;
 	}
 
-		
-		console.log(quizObj.questionNumbers);
-
-
-	function questionCall(num){			
-		
+	function questionCall(num){					
 			$("correct-incorrect").empty();	
 			quizObj.time = 15;
-			
-
-			$("#question").html(quizObj.questions[quizObj.questionNumbers[quizObj.questionNumber]]);
-			
-			
-			console.log(quizObj.questionNumber);
-			
-			answerCall();
-
-
-		
+			$("#question").html(quizObj.questions[quizObj.questionNumbers[quizObj.questionNumber]]);			
+			answerCall();		
 	}	
 // Puts Answers in Random Order
 	function answerCall(){
@@ -121,26 +103,24 @@ $(document).ready(function() {
 		$("#3").html('<input type="radio" name="optionsRadios" id="optionsRadios3" value="' + quizObj.answers[3] + '">' + quizObj.answers[3]);
 
 
-	// Selects Checked Radio Button
-		$(this).on("click", function(){
-			quizObj.checkedVal = $("input:checked").val();
-			console.log(quizObj.checkedVal);
-			console.log(quizObj.correctAnswer[quizObj.questionNumbers[quizObj.questionNumber]]);
+// Selects Checked Radio Button
+	$(this).on("click", function(){
+		quizObj.checkedVal = $("input:checked").val();			
 		});
 	}
 // Submit
 	$(".submit").on("click", function(event){
+		$("#correct-incorrect").removeClass("hide");
 		quizLogic();
 		qReset();
 		questionCall();
-
 	});
 // Question Reset
 	function qReset(){
 		quizObj.answers = [];
 		quizObj.checkedVal = 0;
 	}
-
+// Time Reset
 // Correct Answer Logic
 	function quizLogic(){
 		if(quizObj.checkedVal === quizObj.correctAnswer[quizObj.questionNumbers[quizObj.questionNumber]]){
@@ -148,7 +128,7 @@ $(document).ready(function() {
 			quizObj.questionNumber++;
 			$("#correct-incorrect").removeClass("incorrect");
 			$("#correct-incorrect").addClass("correct").text("Correct!");
-			console.log(quizObj.correct);
+			
 		}
 		else{
 			quizObj.incorrect++;
@@ -168,6 +148,7 @@ function completeQuiz(){
 	$("#time-remaining").addClass("hide");
 	$("#question").addClass("hide");
 	$(".answers").addClass("hide");
+	$("#correct-incorrect").addClass("hide");
 	$(".play-again").removeClass("hide");
 	var grade = Math.floor((quizObj.correct / 15) * 100);
 	clearInterval(questionTime);
